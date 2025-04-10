@@ -10,8 +10,10 @@ using CarRentXpress.Application.Services;
 using CarRentXpress.Application.Services.Contracts;
 using CarRentXpress.Data;
 using CarRentXpress.Profiles;
-using System.Reflection;
+using CarRentXpress.Application.Scraping;
+using CarRentXpress.Core.Repositories;
 using CarRentXpress.Data.Entities;
+using CarRentXpress.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,11 +38,11 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -49,12 +51,26 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddScoped<CarScraperService>();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 Assembly currentAssembly = Assembly.GetExecutingAssembly();
 builder.Services.AddAutoMapper(currentAssembly);
 builder.Services.AddAutoMapper(typeof(CarProfile));
 
 var app = builder.Build();
+
+// When "scrape" argument is passed, create a scope and resolve the scraper service from that scope.
+if (args.Contains("scrape"))
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var scraperService = scope.ServiceProvider.GetRequiredService<CarScraperService>();
+        await scraperService.ScrapeAndPersistCarsAsync();
+    }
+    return; // End execution after running the scraper
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -65,13 +81,10 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
@@ -79,8 +92,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(CarRentXpress.Client._Imports).Assembly);
-
-// Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();

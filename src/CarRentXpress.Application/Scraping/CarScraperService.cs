@@ -1,17 +1,28 @@
-﻿using System.Text.RegularExpressions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using AngleSharp;
-using CarRentXpress.Application.Services;
 using CarRentXpress.Application.Services.Contracts;
 using CarRentXpress.DTOs;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace CarRentXpress.Scraper
+namespace CarRentXpress.Application.Scraping
 {
-    class Program
+    public class CarScraperService
     {
-        static async Task Main()
+        private readonly ICarService _carService;
+
+        public CarScraperService(ICarService carService)
         {
-            //Site name - Carjet
+            _carService = carService;
+        }
+
+        public async Task ScrapeAndPersistCarsAsync()
+        {
+            var scrapedCars = new List<CarDto>();
+             //Site name - Carjet
             //Adjust location, pick and return date
             //Then change the url
 
@@ -59,9 +70,28 @@ namespace CarRentXpress.Scraper
 
                         Console.WriteLine($"Found Car - Brand: {brand}, Model {model}, Price: {pricePerDay}, Image: {imgUrl}");
 
+                        var carDto = new CarDto
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            Brand = brand,
+                            Model = model,
+                            PricePerDay = pricePerDay,
+                            ImgUrl = imgUrl
+                        };
 
+                        scrapedCars.Add(carDto);
                     }
                 }
+            }
+
+            if (scrapedCars.Count > 0)
+            {
+                await _carService.AddCarsAsync(scrapedCars);
+                Console.WriteLine($"{scrapedCars.Count} cars were added to the database.");
+            }
+            else
+            {
+                Console.WriteLine("No cars were scraped.");
             }
         }
     }
