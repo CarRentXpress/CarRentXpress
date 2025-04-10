@@ -1,0 +1,52 @@
+@page "/cars/details/{Id}"
+@inject ICarService CarService
+@inject NavigationManager NavigationManager
+
+@using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.DTOs
+@using MudBlazor
+
+<PageTitle>Car Details</PageTitle> 
+
+<MudPaper Class="p-4">
+    @if (car == null)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <MudStack Spacing="3">
+
+            <MudText Typo="Typo.h4">@car.Brand @car.Model</MudText>
+
+            <MudImage Src="@car.ImgUrl" Alt="Car Image" Width="240" Height="160" Class="rounded-lg" Elevation="25" />
+
+            <MudText Typo="Typo.body1"><b>Year:</b> @car.Year</MudText>
+            <MudText Typo="Typo.body1"><b>Seats:</b> @car.Seats</MudText>
+            <MudText Typo="Typo.body1"><b>Description:</b> @car.Description</MudText>
+            <MudText Typo="Typo.body1"><b>Price per day:</b> €@car.PricePerDay</MudText>
+
+            <MudStack Direction="Row" Spacing="2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GoBack">Back to List</MudButton>
+            </MudStack>
+
+        </MudStack>
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private CarDto car;
+
+    protected override async Task OnInitializedAsync()
+    {
+        car = await CarService.GetCarByIdAsync(Id);
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/cars");
+    }
+}

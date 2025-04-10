@@ -19,4 +19,9 @@
     <ProjectReference Include="..\CarRentXpress.Data\CarRentXpress.Data.csproj" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="Components\Account\Pages\Car\" />
+  </ItemGroup>
+
 </Project>

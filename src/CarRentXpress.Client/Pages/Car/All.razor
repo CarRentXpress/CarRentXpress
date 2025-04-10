@@ -1,0 +1,55 @@
+﻿@page "/cars"
+@using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.DTOs
+@inject NavigationManager NavigationManager
+@inject ICarService CarService
+
+<MudStack Spacing="2"> 
+    @foreach (var car in cars)
+    {
+        <MudCard Class="d-flex align-items-center p-2 justify-between">
+            <!-- Left side (image + text) -->
+            <div class="d-flex gap-4 align-items-center flex-grow-1">
+                <MudImage Src="@car.ImgUrl" Elevation="25" Width="240" Height="160" Class="rounded-lg"></MudImage>
+
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">@car.Brand @car.Model</MudText>
+                    <MudText Typo="Typo.body2">Year: @car.Year</MudText>
+                    <MudText Typo="Typo.body2">Seats: @car.Seats</MudText>
+                    <MudText Typo="Typo.body2">Price per day: €@car.PricePerDay</MudText>
+                </MudCardContent>
+            </div>
+
+            <div class="d-flex gap-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/details/{car.Id}"))">
+                    Details
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/edit/{car.Id}"))">
+                    Edit
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Error" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/delete/{car.Id}"))">
+                    Delete
+                </MudButton>
+            </div>
+
+
+        </MudCard>
+    }
+</MudStack>
+
+
+@code {
+    private List<CarDto> cars = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cars = await CarService.GetAllCarsAsync();
+    }
+
+    private void BookCar(string carId)
+    {
+        // Implement booking logic here
+        Console.WriteLine($"Car {carId} booked.");
+    }
+
+}

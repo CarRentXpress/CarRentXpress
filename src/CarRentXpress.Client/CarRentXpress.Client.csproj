@@ -15,4 +15,8 @@
     <PackageReference Include="MudBlazor" Version="8.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CarRentXpress.Application\CarRentXpress.Application.csproj" />
+  </ItemGroup>
+
 </Project>

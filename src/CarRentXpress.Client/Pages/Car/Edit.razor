@@ -1,0 +1,66 @@
+@page "/cars/edit/{Id}"
+@inject ICarService CarService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+
+@using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.DTOs
+@using MudBlazor
+
+<PageTitle>Edit Car</PageTitle>
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5">Edit Car</MudText>
+
+    @if (car == null)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <EditForm Model="car" OnValidSubmit="HandleValidSubmit">
+            <MudStack Spacing="3">
+
+                <MudTextField @bind-Value="car.Brand" Label="Brand" Required="true" />
+                <MudTextField @bind-Value="car.Model" Label="Model" Required="true" />
+                <MudNumericField @bind-Value="car.Year" Label="Year" Required="true" />
+                <MudNumericField @bind-Value="car.Seats" Label="Seats" Required="true" />
+                <MudTextField @bind-Value="car.Description" Label="Description" />
+                <MudNumericField T="decimal" @bind-Value="car.PricePerDay" Label="Price per Day (€)" Required="true" />
+                <MudTextField @bind-Value="car.ImgUrl" Label="Image URL" Required="true" />
+
+                <MudStack Direction="Row" Spacing="2">
+                    <MudButton Type="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Save Changes</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+                </MudStack>
+
+            </MudStack>
+        </EditForm>
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private CarDto car;
+
+    protected override async Task OnInitializedAsync()
+    {
+        car = await CarService.GetCarByIdAsync(Id);
+    }
+ 
+    private async Task HandleValidSubmit()
+    {
+        await CarService.UpdateCarAsync(car);
+        Snackbar.Add("Car updated successfully!", Severity.Success);
+        NavigationManager.NavigateTo("/cars");
+    }
+
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/cars");
+    }
+}

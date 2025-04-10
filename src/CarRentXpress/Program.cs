@@ -7,7 +7,7 @@ using CarRentXpress.Client.Pages;
 using CarRentXpress.Components;
 using CarRentXpress.Components.Account;
 using CarRentXpress.Application.Services;
-using CarRentXpress.Application.Services.Contracts;
+using CarRentXpress.Application.Services.Interfaces;
 using CarRentXpress.Data;
 using CarRentXpress.Profiles;
 using CarRentXpress.Application.Scraping;
