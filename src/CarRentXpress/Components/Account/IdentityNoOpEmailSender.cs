@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using CarRentXpress.Data;
+using CarRentXpress.Data.Entities;
 
 namespace CarRentXpress.Components.Account;
 

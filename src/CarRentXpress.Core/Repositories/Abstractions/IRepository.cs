@@ -2,7 +2,7 @@
 using CarRentXpress.Data.Entities;
 using CarRentXpress.Data.Sorting;
 
-namespace CarRentXpress.Data.Repositories;
+namespace CarRentXpress.Core.Repositories;
 
 public interface IRepository<TEntity> where TEntity : class, IEntity<string>
 {
@@ -16,4 +16,6 @@ public interface IRepository<TEntity> where TEntity : class, IEntity<string>
     Task<TEntity[]> GetManyAsync(IEnumerable<Expression<Func<TEntity, bool>>> filters, CancellationToken cancellationToken);
     Task<TProjection[]> GetManyAsync<TProjection>(IEnumerable<Expression<Func<TEntity, bool>>> filters, Expression<Func<TEntity, TProjection>> projection, CancellationToken cancellationToken);
     Task<TProjection[]> GetManyAsync<TProjection>(IEnumerable<Expression<Func<TEntity, bool>>> filters, Expression<Func<TEntity, TProjection>> projection, IEnumerable<IOrderClause<TEntity>> orderClauses, CancellationToken cancellationToken);
+    Task CreateManyAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken);
+
 }

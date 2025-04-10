@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -5,7 +6,12 @@ using MudBlazor.Services;
 using CarRentXpress.Client.Pages;
 using CarRentXpress.Components;
 using CarRentXpress.Components.Account;
+using CarRentXpress.Application.Services;
+using CarRentXpress.Application.Services.Contracts;
 using CarRentXpress.Data;
+using CarRentXpress.Profiles;
+using System.Reflection;
+using CarRentXpress.Data.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,12 +41,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddScoped<ICarService, CarService>();
+
+Assembly currentAssembly = Assembly.GetExecutingAssembly();
+builder.Services.AddAutoMapper(currentAssembly);
+builder.Services.AddAutoMapper(typeof(CarProfile));
 
 var app = builder.Build();
 

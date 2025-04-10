@@ -9,6 +9,7 @@ using Microsoft.Extensions.Primitives;
 using CarRentXpress.Components.Account.Pages;
 using CarRentXpress.Components.Account.Pages.Manage;
 using CarRentXpress.Data;
+using CarRentXpress.Data.Entities;
 
 namespace Microsoft.AspNetCore.Routing;
 

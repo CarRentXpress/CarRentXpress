@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using CarRentXpress.Data.Sorting;
 
-namespace CarRentXpress.Data.Repositories.Extensions;
+namespace CarRentXpress.Core.Repositories.Extensions;
 
 public static class QueryExtentions
 {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using CarRentXpress.Data;
+using CarRentXpress.Data.Entities;
 
 namespace CarRentXpress.Components.Account;
 

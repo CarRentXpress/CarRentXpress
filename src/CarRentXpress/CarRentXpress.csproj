@@ -9,11 +9,14 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\CarRentXpress.Application\CarRentXpress.Application.csproj" />
     <ProjectReference Include="..\CarRentXpress.Client\CarRentXpress.Client.csproj" />
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.*" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.*" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
     <ProjectReference Include="..\CarRentXpress.Core\CarRentXpress.Core.csproj" />
+    <ProjectReference Include="..\CarRentXpress.Data\CarRentXpress.Data.csproj" />
   </ItemGroup>
 
 </Project>

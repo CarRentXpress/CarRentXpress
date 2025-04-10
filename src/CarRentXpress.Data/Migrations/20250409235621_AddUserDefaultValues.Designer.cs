@@ -12,20 +12,20 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarRentXpress.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250409213149_Initial")]
-    partial class Initial
+    [Migration("20250409235621_AddUserDefaultValues")]
+    partial class AddUserDefaultValues
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CarRentXpress.Data.ApplicationUser", b =>
+            modelBuilder.Entity("CarRentXpress.Data.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -43,6 +43,18 @@ namespace CarRentXpress.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("DefaultFirstName");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("DefaultLastName");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -99,13 +111,17 @@ namespace CarRentXpress.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("ImgUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PricePerDay")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -256,7 +272,7 @@ namespace CarRentXpress.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("CarRentXpress.Data.ApplicationUser", null)
+                    b.HasOne("CarRentXpress.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -265,7 +281,7 @@ namespace CarRentXpress.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("CarRentXpress.Data.ApplicationUser", null)
+                    b.HasOne("CarRentXpress.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -280,7 +296,7 @@ namespace CarRentXpress.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CarRentXpress.Data.ApplicationUser", null)
+                    b.HasOne("CarRentXpress.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -289,7 +305,7 @@ namespace CarRentXpress.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("CarRentXpress.Data.ApplicationUser", null)
+                    b.HasOne("CarRentXpress.Data.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

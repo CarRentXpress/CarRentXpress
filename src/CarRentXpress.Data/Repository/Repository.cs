@@ -1,9 +1,11 @@
 ﻿using System.Linq.Expressions;
+using CarRentXpress.Core.Repositories;
+using CarRentXpress.Core.Repositories.Extensions;
+using CarRentXpress.Data;
 using CarRentXpress.Data.Entities;
 using CarRentXpress.Data.Sorting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using CarRentXpress.Data.Repositories.Extensions;
 
 namespace CarRentXpress.Data.Repositories;
 
@@ -65,5 +67,10 @@ public class Repository<TEntity>(ApplicationDbContext dbContext) : IRepository<T
     public Task<TProjection[]> GetManyAsync<TProjection>(IEnumerable<Expression<Func<TEntity, bool>>> filters, Expression<Func<TEntity, TProjection>> projection, IEnumerable<IOrderClause<TEntity>> orderClauses, CancellationToken cancellationToken)
         => this._dbContext.Set<TEntity>().Where(filters).OrderBy(orderClauses).Select(projection).ToArrayAsync(cancellationToken);
 
-    
+    public async Task CreateManyAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+    {
+        this._dbContext.Set<TEntity>().AddRange(entities);
+        await this._dbContext.SaveChangesAsync(cancellationToken);
+    }
+
 }
