@@ -69,10 +69,9 @@ if (args.Contains("scrape"))
         var scraperService = scope.ServiceProvider.GetRequiredService<CarScraperService>();
         await scraperService.ScrapeAndPersistCarsAsync();
     }
-    return; // End execution after running the scraper
+    return; 
 }
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();

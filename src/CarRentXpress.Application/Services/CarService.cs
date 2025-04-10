@@ -37,6 +37,8 @@ public class CarService : ICarService
             Model = dto.Model,
             PricePerDay = dto.PricePerDay,
             ImgUrl = dto.ImgUrl,
+            Year = dto.Year,
+            Seats = dto.Seats,
         };
     }
 }

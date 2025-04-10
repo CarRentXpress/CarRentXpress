@@ -4,7 +4,7 @@ using CarRentXpress.Data.Sorting;
 
 namespace CarRentXpress.Core.Repositories;
 
-public interface IRepository<TEntity> where TEntity : class, IEntity<string>
+public interface IRepository<TEntity> where TEntity : class, IBaseDeletableEntity<string>
 {
     Task CreateAsync(TEntity entity, CancellationToken cancellationToken);
     Task UpdateAsync(TEntity entity, CancellationToken cancellationToken);

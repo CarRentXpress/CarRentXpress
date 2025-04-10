@@ -32,8 +32,8 @@ namespace CarRentXpress.Application.Scraping
             //At: 10:30
             //Return Date: 23rd April 2025
             //At: 10:30
-            string url = "https://www.carjet.com/do/list/en?s=e122874d-fe6e-48a8-ac49-8ddefc4bee88&b=09b54ec3-0b69-4032-8d9f-8cf0d9f6619c";
-            
+            string url =
+                "https://www.carjet.com/do/list/en?s=f2c3f048-89e9-4a5a-b31f-56f13164e251&b=09b54ec3-0b69-4032-8d9f-8cf0d9f6619c";
             using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage response = await client.GetAsync(url);
@@ -46,8 +46,13 @@ namespace CarRentXpress.Application.Scraping
                 var articles = document.QuerySelectorAll("article[data-order]");
                 if (articles != null)
                 {
+                    Random rnd = new Random();
                     foreach (var article in articles)
                     {
+                        int year = rnd.Next(2010, 2024);
+                        string seatText = article.QuerySelector("ul.features li")?.GetAttribute("value") ?? "0";
+                        int seatCount = int.Parse(seatText);
+                        
                         string modelAndBrandInThePage = article.QuerySelector("h2")?.TextContent?.Trim() ?? "Not available";
                         var imgElement = article.QuerySelector("img");
 
@@ -85,15 +90,17 @@ namespace CarRentXpress.Application.Scraping
                             model = parts.Length > 1 ? string.Join(" ", parts.Skip(1)) : string.Empty;
                         }
 
-                        Console.WriteLine($"Found Car - Brand: {brand}, Model {model}, Price: {pricePerDay}, Image: {imgUrl}");
+                        Console.WriteLine($"Found Car - Brand: {brand}, Model {model}, Price: {pricePerDay}, Image: {imgUrl}, Seats Count: {seatCount}, Year: {year}");
 
                         var carDto = new CarDto
                         {
                             Id = Guid.NewGuid().ToString(),
                             Brand = brand,
                             Model = model,
+                            Year = year,
+                            Seats = seatCount,
                             PricePerDay = pricePerDay,
-                            ImgUrl = imgUrl
+                            ImgUrl = imgUrl,
                         };
 
                         scrapedCars.Add(carDto);

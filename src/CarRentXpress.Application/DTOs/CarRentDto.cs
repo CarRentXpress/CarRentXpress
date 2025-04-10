@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using CarRentXpress.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarRentXpress.Data.Entities;
+namespace CarRentXpress.Application.Entities;
 
-public class CarRent : BaseDeletableEntity<string>
+public class CarRentDto : BaseDeletableEntity<string>
 {
-    public CarRent()
+    public CarRentDto()
     {
         Id = Guid.NewGuid().ToString();
     }

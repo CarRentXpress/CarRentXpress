@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 namespace CarRentXpress.Data.Repositories;
 
 public class Repository<TEntity>(ApplicationDbContext dbContext) : IRepository<TEntity> 
-    where TEntity : class, IEntity<string>
+    where TEntity : class, IBaseDeletableEntity<string>
 {
     private readonly ApplicationDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
