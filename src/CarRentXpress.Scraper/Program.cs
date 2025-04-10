@@ -39,10 +39,27 @@ namespace CarRentXpress.Scraper
                     {
                         string modelAndBrandInThePage = article.QuerySelector("h2")?.TextContent?.Trim() ?? "Not available";
                         var imgElement = article.QuerySelector("img");
-                        var imgSrc = imgElement?.GetAttribute("data-original") ?? imgElement?.GetAttribute("src");
-                        string imgUrl = (imgSrc != null && imgSrc.StartsWith("http"))
-                            ? imgSrc
-                            : "https://www.carjet.com" + imgSrc;
+
+                        string imgSrc = imgElement?.GetAttribute("data-original");
+
+                        if (string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            imgSrc = imgElement?.GetAttribute("src");
+                        }
+
+                        string imgUrl = string.Empty;
+                        if (!string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            if (imgSrc.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                                imgUrl = imgSrc;
+                            else
+                            {
+                                if (!imgSrc.StartsWith("/"))
+                                    imgSrc = "/" + imgSrc;
+                                imgUrl = "https://www.carjet.com" + imgSrc;
+                            }
+                        }
+
                         string pricePerDayText = article.QuerySelector("em.price-day-euros")?.TextContent?.Trim() ?? "0";
                         decimal pricePerDay = decimal.Parse(Regex.Replace(pricePerDayText, "[£€]", "").Trim());
 
