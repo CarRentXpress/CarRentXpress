@@ -15,5 +15,11 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
         builder.Property(u => u.LastName)
             .HasDefaultValue("DefaultLastName")
             .IsRequired();
+
+        builder.Property(u => u.EGN)
+            .IsRequired();
+        
+        builder.HasIndex(u => u.EGN)
+            .IsUnique();
     }
 }
