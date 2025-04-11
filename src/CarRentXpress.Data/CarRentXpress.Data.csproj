@@ -17,10 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Enums\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\CarRentXpress.Core\CarRentXpress.Core.csproj" />
     </ItemGroup>
 

@@ -1,19 +1,16 @@
 using System.Reflection;
+using CarRentXpress.Application.Scraping;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
-using CarRentXpress.Client.Pages;
 using CarRentXpress.Components;
 using CarRentXpress.Components.Account;
-using CarRentXpress.Application.Services;
-using CarRentXpress.Application.Services.Interfaces;
-using CarRentXpress.Data;
-using CarRentXpress.Profiles;
-using CarRentXpress.Application.Scraping;
 using CarRentXpress.Core.Repositories;
+using CarRentXpress.Data;
 using CarRentXpress.Data.Entities;
 using CarRentXpress.Data.Repositories;
+using CarRentXpress.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,35 +19,30 @@ builder.Services.AddMudServices();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization();
+    .AddInteractiveServerComponents();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddIdentityCookies();
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddRoleManager<RoleManager<IdentityRole>>()
+    .AddUserManager<UserManager<ApplicationUser>>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddScoped<CarRentXpress.Application.Services.Interfaces.ICarService, CarRentXpress.Application.Services.CarService>();
 builder.Services.AddScoped<CarScraperService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -61,7 +53,6 @@ builder.Services.AddAutoMapper(typeof(CarProfile));
 
 var app = builder.Build();
 
-// When "scrape" argument is passed, create a scope and resolve the scraper service from that scope.
 if (args.Contains("scrape"))
 {
     using (var scope = app.Services.CreateScope())
@@ -72,25 +63,28 @@ if (args.Contains("scrape"))
     return; 
 }
 
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseWebAssemblyDebugging();
     app.UseMigrationsEndPoint();
 }
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+
+
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(CarRentXpress.Client._Imports).Assembly);
+    .AddInteractiveServerRenderMode();
+
+// Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
 app.Run();

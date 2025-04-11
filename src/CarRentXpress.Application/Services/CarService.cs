@@ -5,6 +5,8 @@ using CarRentXpress.Data.Entities;
 using CarRentXpress.DTOs;
 using System.Linq.Expressions;
 
+namespace CarRentXpress.Application.Services;
+
 public class CarService : ICarService
 {
     private readonly IRepository<Car> _carRepository;

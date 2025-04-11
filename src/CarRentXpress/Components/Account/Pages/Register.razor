@@ -6,7 +6,6 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using CarRentXpress.Data
-@using CarRentXpress.Data.Entities
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserStore<ApplicationUser> UserStore
@@ -45,11 +44,6 @@
                                         UserAttributes="@(new() { { "autocomplete", "new-password" }, { "aria-required", "true" } } )" />
                 </MudItem>
                 <MudItem md="12">
-                    <MudStaticTextField For="@(() => Input.EGN)" @bind-Value="Input.EGN"
-                                        Label="EGN" Placeholder="0123456789"
-                                        UserAttributes="@(new() { { "autocomplete", "egn" }, { "aria-required", "true" } } )" />
-                </MudItem>
-                <MudItem md="12">
                     <MudStaticButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" FormAction="FormAction.Submit">Register</MudStaticButton>
                 </MudItem>
             </MudGrid>
@@ -79,7 +73,6 @@
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-        user.EGN = Input.EGN;
         var result = await UserManager.CreateAsync(user, Input.Password);
 
         if (!result.Succeeded)
@@ -149,10 +142,5 @@
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
-        
-        [Required]
-        [StringLength(10, ErrorMessage = "The EGN must be exactly 10 chars long.", MinimumLength = 10)]
-        [Display(Name = "EGN")]
-        public string EGN { get; set; } = "";
     }
 }

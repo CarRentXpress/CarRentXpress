@@ -17,5 +17,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
         modelBuilder.ApplyConfiguration(new CarConfiguration());
         modelBuilder.ApplyConfiguration(new CarRentConfiguration());
+        modelBuilder.ApplyConfiguration(new IdentityRoleConfiguration());
     }
 }

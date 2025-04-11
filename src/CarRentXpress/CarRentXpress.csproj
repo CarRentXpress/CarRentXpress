@@ -4,24 +4,23 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-CarRentXpress-7d3cd753-1635-46dc-9338-cd99e829ae74</UserSecretsId>
+    <UserSecretsId>aspnet-CarRentXpress2-02d52012-9fd3-4105-98ef-1da35af13229</UserSecretsId>
   </PropertyGroup>
 
 
   <ItemGroup>
-    <ProjectReference Include="..\CarRentXpress.Application\CarRentXpress.Application.csproj" />
-    <ProjectReference Include="..\CarRentXpress.Client\CarRentXpress.Client.csproj" />
-    <PackageReference Include="AutoMapper" Version="14.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.*" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.*" />
+    <PackageReference Include="MudBlazor" Version="8.*" />
     <PackageReference Include="Extensions.MudBlazor.StaticInput" Version="3.*" />
-    <ProjectReference Include="..\CarRentXpress.Core\CarRentXpress.Core.csproj" />
-    <ProjectReference Include="..\CarRentXpress.Data\CarRentXpress.Data.csproj" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <Folder Include="Components\Account\Pages\Car\" />
+    <ProjectReference Include="..\CarRentXpress.Application\CarRentXpress.Application.csproj" />
+    <ProjectReference Include="..\CarRentXpress.Scraper\CarRentXpress.Scraper.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,11 +1,10 @@
-using Microsoft.AspNetCore.Identity;
 using CarRentXpress.Data;
 using CarRentXpress.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace CarRentXpress.Components.Account;
 
-internal sealed class IdentityUserAccessor(UserManager<
-    ApplicationUser> userManager, IdentityRedirectManager redirectManager)
+internal sealed class IdentityUserAccessor(UserManager<ApplicationUser> userManager, IdentityRedirectManager redirectManager)
 {
     public async Task<ApplicationUser> GetRequiredUserAsync(HttpContext context)
     {

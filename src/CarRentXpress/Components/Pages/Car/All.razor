@@ -1,10 +1,13 @@
 ﻿@page "/cars"
 @using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.Data.Enums
 @using CarRentXpress.DTOs
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
 @inject ICarService CarService
 
-<MudStack Spacing="2"> 
+<MudStack Spacing="2">
     @foreach (var car in cars)
     {
         <MudCard Class="d-flex align-items-center p-2 justify-between">
@@ -24,32 +27,24 @@
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/details/{car.Id}"))">
                     Details
                 </MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/edit/{car.Id}"))">
-                    Edit
-                </MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Error" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/delete/{car.Id}"))">
-                    Delete
-                </MudButton>
+                <AuthorizeView Roles=@Role.Admin.ToString()>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/edit/{car.Id}"))">
+                        Edit
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/delete/{car.Id}"))">
+                        Delete
+                    </MudButton>
+                </AuthorizeView>
             </div>
-
-
         </MudCard>
     }
 </MudStack>
 
-
 @code {
     private List<CarDto> cars = new();
-
+    
     protected override async Task OnInitializedAsync()
     {
         cars = await CarService.GetAllCarsAsync();
     }
-
-    private void BookCar(string carId)
-    {
-        // Implement booking logic here
-        Console.WriteLine($"Car {carId} booked.");
-    }
-
 }
