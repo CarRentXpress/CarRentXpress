@@ -1,5 +1,6 @@
 using System.Reflection;
 using CarRentXpress.Application.Scraping;
+using CarRentXpress.Application.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,7 @@ builder.Services.AddScoped<IFileUploadService, FirebaseStorageService>();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddScoped<CarRentXpress.Application.Services.Interfaces.ICarService, CarRentXpress.Application.Services.CarService>();
+builder.Services.AddScoped<ICarRentService, CarRentService>();
 builder.Services.AddScoped<CarScraperService>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -52,6 +54,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 Assembly currentAssembly = Assembly.GetExecutingAssembly();
 builder.Services.AddAutoMapper(currentAssembly);
 builder.Services.AddAutoMapper(typeof(CarProfile));
+builder.Services.AddAutoMapper(typeof(CarRentProfile));
 
 var app = builder.Build();
 

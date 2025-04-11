@@ -9,6 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject ICarService CarService
 @inject IDialogService DialogService
+
 <MudStack Spacing="2">
     @foreach (var car in cars)
     {
@@ -19,12 +20,23 @@
 
                 <MudCardContent>
                     <MudText Typo="Typo.h6">@car.Brand @car.Model</MudText>
+
+                    <!-- Year and Seats text aligned normally -->
                     <MudText Typo="Typo.body2">Year: @car.Year</MudText>
                     <MudText Typo="Typo.body2">Seats: @car.Seats</MudText>
+
+                    <!-- Price per day text aligned normally -->
                     <MudText Typo="Typo.body2">Price per day: €@car.PricePerDay</MudText>
                 </MudCardContent>
             </div>
-
+            
+            <!-- Rent button aligned to the right of the text and with a fixed width -->
+            <div class="d-flex flex-column gap-1">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" OnClick="@(() => NavigationManager.NavigateTo($"/cars/rent/{car.Id}"))" Style="width: 9.8%; margin-bottom: 0.3%; margin-top: 0.3%">
+                    Rent
+                </MudButton>
+            </div>
+            
             <div class="d-flex gap-2">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/details/{car.Id}"))">
                     Details
@@ -43,14 +55,13 @@
 </MudStack>
 
 @code {
-    
     private List<CarDto> cars = new();
-    
+
     protected override async Task OnInitializedAsync()
     {
         cars = await CarService.GetAllCarsAsync();
     }
-    
+
     private async Task OpenDeleteDialog(CarDto car)
     {
         var parameters = new DialogParameters<DeleteCarDialog> { { x => x.Car, car } };
@@ -64,5 +75,12 @@
         {
             cars = await CarService.GetAllCarsAsync();
         }
+    }
+
+    private void RentCar(CarDto car)
+    {
+        Console.WriteLine($"Renting car: {car.Brand} {car.Model}");
+        
+        
     }
 }

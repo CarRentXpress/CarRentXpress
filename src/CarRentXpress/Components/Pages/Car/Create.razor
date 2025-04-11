@@ -11,17 +11,18 @@
 <h3>Create Car</h3>
 
 <EditForm Model="@carDto" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator/>
-    <ValidationSummary/>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-    <MudTextField Label="Brand" @bind-Value="carDto.Brand" Required/>
-    <MudTextField Label="Model" @bind-Value="carDto.Model" Required/>
-    <MudTextField Label="Year" @bind-Value="carDto.Year" Required/>
-    <MudTextField Label="Seats" @bind-Value="carDto.Seats" Required/>
-    <MudTextField Label="Price Per Day" @bind-Value="carDto.PricePerDay" Required/>
-    <MudTextField Label="Description" @bind-Value="carDto.Description"/>
+    <!-- Add vertical spacing -->
+    <MudTextField Label="Brand" @bind-Value="carDto.Brand" Required Style="margin-bottom: 16px;" />
+    <MudTextField Label="Model" @bind-Value="carDto.Model" Required Style="margin-bottom: 16px;" />
+    <MudTextField Label="Year" @bind-Value="carDto.Year" Required Style="margin-bottom: 16px;" />
+    <MudTextField Label="Seats" @bind-Value="carDto.Seats" Required Style="margin-bottom: 16px;" />
+    <MudTextField Label="Price Per Day" @bind-Value="carDto.PricePerDay" Required Style="margin-bottom: 16px;" />
+    <MudTextField Label="Description" @bind-Value="carDto.Description" Style="margin-bottom: 16px;" />
 
-    <!-- Image upload -->
+    <!-- Image upload section with vertical space and aligned layout -->
     <MudFileUpload T="IBrowserFile" FilesChanged="OnFileChanged">
         <ActivatorContent>
             <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
@@ -30,17 +31,37 @@
         </ActivatorContent>
     </MudFileUpload>
 
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Create Car</MudButton>
+    <!-- Display the selected image with an 'X' button for removal -->
+    @if (filePreviewUrl != null)
+    {
+        <div class="image-preview-container" style="margin-top: 16px; position: relative; width: 100px; height: 100px;">
+            <div style="background-image: url('@filePreviewUrl'); background-size: cover; background-position: center; width: 100%; height: 100%;"></div>
+            <!-- X Button to remove the image -->
+            <MudIconButton Icon="@Icons.Material.Filled.Cancel" Color="Color.Error" OnClick="RemoveImage"
+                           Style="position: absolute; top: -8px; right: -8px; z-index: 1; width: 24px; height: 24px; padding: 0; font-size: 16px;"/>
+        </div>
+    }
+
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Style="margin-top: 16px;">Create Car</MudButton>
 </EditForm>
 
 @code {
     private CarDto carDto = new CarDto();
-    private string imgUrl = "";
     private IBrowserFile? file;
+    private string? filePreviewUrl;
 
     private async Task OnFileChanged(IBrowserFile? file)
     {
         this.file = file;
+
+        if (file is not null)
+        {
+            // Create a preview URL for the selected image (in base64)
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(buffer);
+
+            filePreviewUrl = $"data:image/{file.ContentType.Split('/')[1]};base64,{Convert.ToBase64String(buffer)}";
+        }
     }
 
     private async Task HandleValidSubmit()
@@ -49,12 +70,15 @@
         if (file is not null)
         {
             var fileUrl = await FileUploadService.UploadFileAsync(file.OpenReadStream(), "CarImages/");
-            imgUrl = fileUrl;
+            carDto.ImgUrl = fileUrl;  // Save the uploaded URL
         }
-        carDto.ImgUrl = imgUrl; // Set the ImgUrl to the uploaded image URL
-        // Call your service to save the car details
         await CarService.AddCarAsync(carDto);
     }
 
+    private void RemoveImage()
+    {
+        // Clear the selected image
+        filePreviewUrl = null;
+        file = null;
+    }
 }
-

@@ -1,0 +1,104 @@
+﻿@page "/cars/rent/{id}"
+@using System.Security.Claims
+@using AutoMapper
+@using CarRentXpress.Application.Entities
+@using CarRentXpress.Application.Services
+@using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.DTOs
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using MudBlazor
+@inject ICarService CarService
+@inject NavigationManager NavigationManager
+@inject ICarRentService CarRentService
+@inject UserManager<ApplicationUser> UserManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IMapper mapper
+
+<PageTitle>Rent Car</PageTitle>
+
+<MudPaper Class="p-4">
+    @if (car == null)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <MudStack Spacing="3">
+            <MudText Typo="Typo.h4">@car.Brand @car.Model</MudText>
+
+            <MudImage Src="@car.ImgUrl" Alt="Car Image" Width="240" Height="160" Class="rounded-lg" Elevation="25" />
+
+            <MudText Typo="Typo.body1"><b>Year:</b> @car.Year</MudText>
+            <MudText Typo="Typo.body1"><b>Seats:</b> @car.Seats</MudText>
+            <MudText Typo="Typo.body1"><b>Description:</b> @car.Description</MudText>
+            <MudText Typo="Typo.body1"><b>Price per day:</b> €@car.PricePerDay</MudText>
+
+            <!-- Date Range Picker for selecting rental dates -->
+            <MudDateRangePicker @bind-DateRange="selectedDateRange" Label="Select rental period" />
+
+            @if (totalPrice > 0)
+            {
+                <MudText Typo="Typo.h6"><b>Total Price: €@totalPrice</b></MudText>
+            }
+
+            <MudStack Direction="Row" Spacing="2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GoBack">Back to List</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="SubmitRent">Rent</MudButton>
+            </MudStack>
+        </MudStack>
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private CarDto car;
+    private DateRange selectedDateRange = new DateRange(); // To bind to MudDateRangePicker
+    private decimal totalPrice;
+
+    protected override async Task OnInitializedAsync()
+    {
+        car = await CarService.GetCarByIdAsync(Id);
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/cars");
+    }
+
+    private void SubmitRent()
+    {
+        if (selectedDateRange.Start.HasValue && selectedDateRange.End.HasValue)
+        {
+            // TODO: check if car is available in all the days
+            
+            var startDate = selectedDateRange.Start.Value;
+            var endDate = selectedDateRange.End.Value;
+
+            var rentalDays = (endDate - startDate).Days;
+
+            totalPrice = rentalDays * car.PricePerDay;
+
+            var rent = new CarRentDto
+            {
+                Car = mapper.Map<Car>(car),
+                User = UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User).Result,
+                StartDate = startDate,
+                EndDate = endDate,
+                Price = totalPrice
+            };
+
+            //TODO:
+            //we get this exception when debugging
+            //System.InvalidOperationException: The instance of entity type 'Car' cannot be tracked because another instance with the same key value for {'Id'} is already being tracked. When attaching existing entities, ensure that only one entity instance with a given key value is attached. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see the conflicting key values.
+            //because in OnInitiliazedAsync we get a Car entity which EF core follows even tho its mapped as a DTO
+            //and when adding it to DB in RentCarAsync it needs to map it back to Car leading to this error
+            
+            CarRentService.RentCarAsync(rent);
+            Console.WriteLine("rented");
+            NavigationManager.NavigateTo("/cars");
+        }
+    }
+}
