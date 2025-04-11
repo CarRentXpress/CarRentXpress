@@ -33,7 +33,7 @@ public class CarService : ICarService
     public async Task<List<CarDto>> GetAllCarsAsync(CancellationToken cancellationToken = default)
     {
         var cars = await _carRepository.GetManyAsync(Array.Empty<Expression<Func<Car, bool>>>(), cancellationToken);
-        return _mapper.Map<List<CarDto>>(cars);
+        return _mapper.Map<List<CarDto>>(cars.Where(c => c.IsDeleted == false));
     }
 
     public async Task<CarDto?> GetCarByIdAsync(string id, CancellationToken cancellationToken = default)
@@ -66,8 +66,7 @@ public class CarService : ICarService
         await _carRepository.UpdateAsync(existingCar, cancellationToken);
     }
 
-
-    public async Task DeleteCarAsync(string id, CancellationToken cancellationToken = default)
+    public async Task SoftDeleteCarAsync(string id, CancellationToken cancellationToken = default)
     {
         var filters = new List<Expression<Func<Car, bool>>>
         {
@@ -76,7 +75,20 @@ public class CarService : ICarService
         var car = await _carRepository.GetAsync(filters, cancellationToken);
         if (car != null)
         {
-            await _carRepository.DeleteAsync(car, cancellationToken);
+            await _carRepository.SoftDeleteAsync(car, cancellationToken);
+        }
+    }
+
+    public async Task HardDeleteCarAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var filters = new List<Expression<Func<Car, bool>>>
+        {
+            car => car.Id == id
+        };
+        var car = await _carRepository.GetAsync(filters, cancellationToken);
+        if (car != null)
+        {
+            await _carRepository.HardDeleteAsync(car, cancellationToken);
         }
     }
 }

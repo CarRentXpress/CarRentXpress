@@ -1,12 +1,14 @@
 ﻿@page "/cars"
 @using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.Components.Dialog
+@using CarRentXpress.Core.Repositories
 @using CarRentXpress.Data.Enums
 @using CarRentXpress.DTOs
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
 @inject ICarService CarService
-
+@inject IDialogService DialogService
 <MudStack Spacing="2">
     @foreach (var car in cars)
     {
@@ -31,7 +33,7 @@
                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/edit/{car.Id}"))">
                         Edit
                     </MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/delete/{car.Id}"))">
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" Size="Size.Small" OnClick="@((e) => OpenDeleteDialog(car))">
                         Delete
                     </MudButton>
                 </AuthorizeView>
@@ -41,10 +43,26 @@
 </MudStack>
 
 @code {
+    
     private List<CarDto> cars = new();
     
     protected override async Task OnInitializedAsync()
     {
         cars = await CarService.GetAllCarsAsync();
+    }
+    
+    private async Task OpenDeleteDialog(CarDto car)
+    {
+        var parameters = new DialogParameters<DeleteCarDialog> { { x => x.Car, car } };
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+        var dialog = await DialogService.ShowAsync<DeleteCarDialog>($"Delete {car.Brand} {car.Model}?", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            cars = await CarService.GetAllCarsAsync();
+        }
     }
 }

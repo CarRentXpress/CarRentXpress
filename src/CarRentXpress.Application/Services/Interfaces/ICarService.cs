@@ -9,5 +9,6 @@ public interface ICarService
     Task<List<CarDto>> GetAllCarsAsync(CancellationToken cancellationToken = default);
     Task<CarDto?> GetCarByIdAsync(string id, CancellationToken cancellationToken = default);
     Task UpdateCarAsync(CarDto carDto, CancellationToken cancellationToken = default);
-    Task DeleteCarAsync(string id, CancellationToken cancellationToken = default);
+    Task SoftDeleteCarAsync(string id, CancellationToken cancellationToken = default);
+    Task HardDeleteCarAsync(string id, CancellationToken cancellationToken = default);
 }

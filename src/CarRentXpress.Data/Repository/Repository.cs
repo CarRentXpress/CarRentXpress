@@ -25,7 +25,15 @@ public class Repository<TEntity>(ApplicationDbContext dbContext) : IRepository<T
         await this._dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken)
+    public async Task SoftDeleteAsync(TEntity entity, CancellationToken cancellationToken)
+    {
+        entity.IsDeleted = true;
+        entity.DeletedAt = DateTime.UtcNow;
+        _dbContext.Set<TEntity>().Update(entity);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+    
+    public async Task HardDeleteAsync(TEntity entity, CancellationToken cancellationToken)
     {
         this._dbContext.Set<TEntity>().Remove(entity);
         await this._dbContext.SaveChangesAsync(cancellationToken);
@@ -72,5 +80,7 @@ public class Repository<TEntity>(ApplicationDbContext dbContext) : IRepository<T
         this._dbContext.Set<TEntity>().AddRange(entities);
         await this._dbContext.SaveChangesAsync(cancellationToken);
     }
-
+    
+    
+    
 }

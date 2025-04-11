@@ -1,0 +1,36 @@
+﻿@using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.DTOs
+
+@inject ICarService CarService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.DeleteForever" Class="mr-3 mb-n1"/>
+            Delete car?
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField Value="@Car.Id.ToString()" Label="Id" ReadOnly="true"/>
+        <MudTextField Value="@Car.Brand" Label="Brand" ReadOnly="true"/>
+        <MudTextField Value="@Car.Model" Label="Model" ReadOnly="true"/>
+        <MudTextField Value="@Car.Year" Label="Year" ReadOnly="true"/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="async () => await Cancel()">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="async () => await DeleteCar()">Delete Car</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public CarDto Car { get; set; } = new();
+    
+    private async Task Cancel() => MudDialog.Cancel();
+
+    private async Task DeleteCar()
+    {
+        await CarService.SoftDeleteCarAsync(Car.Id);
+        MudDialog.Close(DialogResult.Ok(Car.Id));
+    }
+}
