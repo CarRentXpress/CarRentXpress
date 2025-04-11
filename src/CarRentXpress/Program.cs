@@ -41,6 +41,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IFileUploadService, FirebaseStorageService>();
+
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 builder.Services.AddScoped<CarRentXpress.Application.Services.Interfaces.ICarService, CarRentXpress.Application.Services.CarService>();
 builder.Services.AddScoped<CarScraperService>();

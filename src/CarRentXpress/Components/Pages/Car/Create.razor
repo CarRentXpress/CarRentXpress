@@ -1,7 +1,60 @@
 ﻿@page "/cars/create"
 
-<h3>Create</h3>
+@using CarRentXpress.DTOs
+@using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.Core.Repositories
+@inject ICarService CarService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@inject IFileUploadService FileUploadService
+
+<h3>Create Car</h3>
+
+<EditForm Model="@carDto" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <MudTextField Label="Brand" @bind-Value="carDto.Brand" Required/>
+    <MudTextField Label="Model" @bind-Value="carDto.Model" Required/>
+    <MudTextField Label="Year" @bind-Value="carDto.Year" Required/>
+    <MudTextField Label="Seats" @bind-Value="carDto.Seats" Required/>
+    <MudTextField Label="Price Per Day" @bind-Value="carDto.PricePerDay" Required/>
+    <MudTextField Label="Description" @bind-Value="carDto.Description"/>
+
+    <!-- Image upload -->
+    <MudFileUpload T="IBrowserFile" FilesChanged="OnFileChanged">
+        <ActivatorContent>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.CloudUpload">
+                Upload Image
+            </MudButton>
+        </ActivatorContent>
+    </MudFileUpload>
+
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Create Car</MudButton>
+</EditForm>
 
 @code {
-    
+    private CarDto carDto = new CarDto();
+    private string imgUrl = "";
+    private IBrowserFile? file;
+
+    private async Task OnFileChanged(IBrowserFile? file)
+    {
+        this.file = file;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        Console.WriteLine("testtest");
+        if (file is not null)
+        {
+            var fileUrl = await FileUploadService.UploadFileAsync(file.OpenReadStream(), "CarImages/");
+            imgUrl = fileUrl;
+        }
+        carDto.ImgUrl = imgUrl; // Set the ImgUrl to the uploaded image URL
+        // Call your service to save the car details
+        await CarService.AddCarAsync(carDto);
+    }
+
 }
+

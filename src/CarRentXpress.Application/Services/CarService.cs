@@ -20,7 +20,13 @@ public class CarService : ICarService
 
     public async Task AddCarAsync(CarDto carDto, CancellationToken cancellationToken = default)
     {
-        var car = _mapper.Map<Car>(carDto);
+        Car car = _mapper.Map<Car>(carDto);
+    
+        if (string.IsNullOrEmpty(car.Id))
+        {
+            car.Id = Guid.NewGuid().ToString();
+        }
+        
         await _carRepository.CreateAsync(car, cancellationToken);
     }
 
