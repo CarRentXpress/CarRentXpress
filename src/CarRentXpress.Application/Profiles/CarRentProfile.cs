@@ -10,5 +10,11 @@ public class CarRentProfile : Profile
     {
         CreateMap<CarRentDto, CarRent>();
         CreateMap<CarRent, CarRentDto>();
+        
+        CreateMap<IEnumerable<CarRent>, IEnumerable<CarRentDto>>()
+            .ConvertUsing((src, dest, context) => src.Select(x => context.Mapper.Map<CarRentDto>(x)).ToList());
+
+        CreateMap<IEnumerable<CarRentDto>, IEnumerable<CarRent>>()
+            .ConvertUsing((src, dest, context) => src.Select(x => context.Mapper.Map<CarRent>(x)).ToList());
     }
 }

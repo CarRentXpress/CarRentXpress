@@ -11,43 +11,49 @@
 
 @attribute [Authorize(Roles = $"{Role.Admin}")]
 
-<PageTitle>Edit Car</PageTitle>
+<AuthorizeView Roles="@Role.Admin" Context="authContext">
+    <PageTitle>Edit Car</PageTitle>
 
-<MudPaper Class="p-4">
-    <MudText Typo="Typo.h5">Edit Car</MudText>
+    <MudPaper Class="p-4">
+        <MudText Typo="Typo.h5">Edit Car</MudText>
 
-    @if (car == null)
-    {
-        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
-    }
-    else
-    {
-        <EditForm Model="car" OnValidSubmit="HandleValidSubmit">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <MudStack Spacing="3">
+        @if (car == null)
+        {
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary"/>
+        }
+        else
+        {
+            <EditForm Model="car" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+                <MudStack Spacing="3">
 
-                <MudTextField @bind-Value="car.Brand" Label="Brand" Required="true"/>
-                <MudTextField @bind-Value="car.Model" Label="Model" Required="true"/>
-                <MudNumericField @bind-Value="car.Year" Label="Year" Required="true"/>
-                <MudNumericField @bind-Value="car.Seats" Label="Seats" Required="true"/>
-                <MudTextField @bind-Value="car.Description" Label="Description"/>
-                <MudNumericField T="decimal" @bind-Value="car.PricePerDay" Label="Price per Day (€)" Required="true"/>
-                <MudTextField @bind-Value="car.ImgUrl" Label="Image URL" Required="true"/>
+                    <MudTextField @bind-Value="car.Brand" Label="Brand" Required="true"/>
+                    <MudTextField @bind-Value="car.Model" Label="Model" Required="true"/>
+                    <MudNumericField @bind-Value="car.Year" Label="Year" Required="true"/>
+                    <MudNumericField @bind-Value="car.Seats" Label="Seats" Required="true"/>
+                    <MudTextField @bind-Value="car.Description" Label="Description"/>
+                    <MudNumericField T="decimal" @bind-Value="car.PricePerDay" Label="Price per Day (€)"
+                                     Required="true"/>
+                    <MudTextField @bind-Value="car.ImgUrl" Label="Image URL" Required="true"/>
 
-                <MudStack Direction="Row" Spacing="2">
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Save Changes</MudButton>
-                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+                    <MudStack Direction="Row" Spacing="2">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Save
+                            Changes
+                        </MudButton>
+                        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Secondary"
+                                   OnClick="Cancel">Cancel
+                        </MudButton>
+                    </MudStack>
+
                 </MudStack>
-
-            </MudStack>
-        </EditForm>
-    }
-</MudPaper>
+            </EditForm>
+        }
+    </MudPaper>
+</AuthorizeView>
 
 @code {
-    [Parameter]
-    public string Id { get; set; }
+    [Parameter] public string Id { get; set; }
 
     private CarDto car;
 
@@ -55,7 +61,7 @@
     {
         car = await CarService.GetCarByIdAsync(Id);
     }
- 
+
     private async Task HandleValidSubmit()
     {
         Console.WriteLine("submitting grrr");
@@ -69,4 +75,5 @@
     {
         NavigationManager.NavigateTo("/cars");
     }
+
 }

@@ -18,11 +18,8 @@
 @inject ISnackbar Snackbar
 
 @attribute [Authorize]
-
-<PageTitle>Rent Car</PageTitle>
-
-
 <AuthorizeView>
+    <PageTitle>Rent Car</PageTitle>
     <MudPaper Class="p-4">
         @if (car == null)
         {
@@ -62,6 +59,7 @@
 
     private CarDto? car;
     private DateRange _selectedDateRange = new DateRange();
+
     private DateRange SelectedDateRange
     {
         get => _selectedDateRange;
@@ -74,6 +72,7 @@
             }
         }
     }
+
     private decimal totalPrice;
 
     protected override async Task OnInitializedAsync()
@@ -97,7 +96,7 @@
             totalPrice = rentalDays * car.PricePerDay;
         }
     }
-    
+
     private async Task SubmitRent()
     {
         if (SelectedDateRange.Start.HasValue && SelectedDateRange.End.HasValue)
