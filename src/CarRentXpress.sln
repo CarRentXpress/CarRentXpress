@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarRentXpress.Scraper", "Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarRentXpress.Application", "CarRentXpress.Application\CarRentXpress.Application.csproj", "{CAD3AE93-96D2-4946-BABA-7353F5ED93B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarRentXpress.Tests", "CarRentXpress.Tests\CarRentXpress.Tests.csproj", "{278D950B-1436-49BD-9DAA-6800533C3BA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,18 @@ Global
 		{CAD3AE93-96D2-4946-BABA-7353F5ED93B4}.Release|x64.Build.0 = Release|Any CPU
 		{CAD3AE93-96D2-4946-BABA-7353F5ED93B4}.Release|x86.ActiveCfg = Release|Any CPU
 		{CAD3AE93-96D2-4946-BABA-7353F5ED93B4}.Release|x86.Build.0 = Release|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Debug|x64.Build.0 = Debug|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Debug|x86.Build.0 = Debug|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Release|x64.ActiveCfg = Release|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Release|x64.Build.0 = Release|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Release|x86.ActiveCfg = Release|Any CPU
+		{278D950B-1436-49BD-9DAA-6800533C3BA2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
