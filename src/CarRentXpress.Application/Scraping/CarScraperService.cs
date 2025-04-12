@@ -28,7 +28,7 @@ namespace CarRentXpress.Application.Scraping
             //Return Date: 23rd April 2025
             //At: 10:30
             string url =
-                "https://www.carjet.com/do/list/en?s=f2c3f048-89e9-4a5a-b31f-56f13164e251&b=09b54ec3-0b69-4032-8d9f-8cf0d9f6619c";
+                "https://www.carjet.com/do/list/en?s=14c8da8c-6d0c-4637-a859-a8a4f33a0459&b=09b54ec3-0b69-4032-8d9f-8cf0d9f6619c";
             using (HttpClient client = new HttpClient())
             {
                 HttpResponseMessage response = await client.GetAsync(url);

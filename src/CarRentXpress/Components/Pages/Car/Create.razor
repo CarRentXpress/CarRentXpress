@@ -72,8 +72,14 @@
             var fileUrl = await FileUploadService.UploadFileAsync(file.OpenReadStream(), "CarImages/");
             carDto.ImgUrl = fileUrl;  // Save the uploaded URL
         }
+
         await CarService.AddCarAsync(carDto);
+
+        Snackbar.Add("Car created successfully!", Severity.Success); // Optional: success message
+
+        NavigationManager.NavigateTo("/cars"); // Redirect after successful creation
     }
+
 
     private void RemoveImage()
     {

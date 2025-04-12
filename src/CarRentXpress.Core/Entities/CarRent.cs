@@ -11,6 +11,7 @@ public class CarRent : BaseDeletableEntity<string>
     }
 
     [Required]
+    public string CarId{ get; set; }
     public Car Car { get; set; }
     [Required]
     public ApplicationUser User { get; set; }

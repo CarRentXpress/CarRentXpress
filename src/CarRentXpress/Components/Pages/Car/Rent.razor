@@ -54,7 +54,7 @@
     [Parameter]
     public string Id { get; set; }
 
-    private CarDto car;
+    private CarDto? car;
     private DateRange selectedDateRange = new DateRange(); // To bind to MudDateRangePicker
     private decimal totalPrice;
 
@@ -68,12 +68,10 @@
         NavigationManager.NavigateTo("/cars");
     }
 
-    private void SubmitRent()
+    private async Task SubmitRent()
     {
         if (selectedDateRange.Start.HasValue && selectedDateRange.End.HasValue)
         {
-            // TODO: check if car is available in all the days
-            
             var startDate = selectedDateRange.Start.Value;
             var endDate = selectedDateRange.End.Value;
 
@@ -81,24 +79,31 @@
 
             totalPrice = rentalDays * car.PricePerDay;
 
+            var user = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
+
+            // Check availability before renting
+            var isAvailable = await CarRentService.IsCarAvailableAsync(car.Id, startDate, endDate);
+            if (!isAvailable)
+            {
+                // Show an error message (optionally use MudBlazor Snackbar)
+                Console.WriteLine("Car is not available in the selected date range.");
+                return;
+            }
+
             var rent = new CarRentDto
             {
-                Car = mapper.Map<Car>(car),
-                User = UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User).Result,
+                CarId = car.Id,
+                Car = car,
+                User = user,
                 StartDate = startDate,
                 EndDate = endDate,
                 Price = totalPrice
             };
 
-            //TODO:
-            //we get this exception when debugging
-            //System.InvalidOperationException: The instance of entity type 'Car' cannot be tracked because another instance with the same key value for {'Id'} is already being tracked. When attaching existing entities, ensure that only one entity instance with a given key value is attached. Consider using 'DbContextOptionsBuilder.EnableSensitiveDataLogging' to see the conflicting key values.
-            //because in OnInitiliazedAsync we get a Car entity which EF core follows even tho its mapped as a DTO
-            //and when adding it to DB in RentCarAsync it needs to map it back to Car leading to this error
-            
-            CarRentService.RentCarAsync(rent);
-            Console.WriteLine("rented");
+            await CarRentService.RentCarAsync(rent);
+            Console.WriteLine("Rented successfully!");
             NavigationManager.NavigateTo("/cars");
         }
     }
+
 }

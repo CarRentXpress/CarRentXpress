@@ -1,13 +1,14 @@
-﻿@page "/cars"
+﻿@page "/rented/cars"
+@using CarRentXpress.Application.Entities
+@using CarRentXpress.Application.Services
 @using CarRentXpress.Application.Services.Interfaces
 @using CarRentXpress.Components.Dialog
-@using CarRentXpress.Core.Enums
 @using CarRentXpress.Core.Repositories
 @using CarRentXpress.DTOs
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager NavigationManager
-@inject ICarService CarService
+@inject ICarRentService CarRentService
 @inject IDialogService DialogService
 
 <MudStack Spacing="2">
@@ -16,17 +17,17 @@
         <MudCard Class="d-flex align-items-center p-2 justify-between">
             <!-- Left side (image + text) -->
             <div class="d-flex gap-4 align-items-center flex-grow-1">
-                <MudImage Src="@car.ImgUrl" Elevation="25" Width="240" Height="160" Class="rounded-lg"></MudImage>
+                <MudImage Src="@car.Car.ImgUrl" Elevation="25" Width="240" Height="160" Class="rounded-lg"></MudImage>
 
                 <MudCardContent>
-                    <MudText Typo="Typo.h6">@car.Brand @car.Model</MudText>
+                    <MudText Typo="Typo.h6">@car.Car.Brand @car.Car.Model</MudText>
 
                     <!-- Year and Seats text aligned normally -->
-                    <MudText Typo="Typo.body2">Year: @car.Year</MudText>
-                    <MudText Typo="Typo.body2">Seats: @car.Seats</MudText>
+                    <MudText Typo="Typo.body2">Year: @car.Car.Year</MudText>
+                    <MudText Typo="Typo.body2">Seats: @car.Car.Seats</MudText>
 
                     <!-- Price per day text aligned normally -->
-                    <MudText Typo="Typo.body2">Price per day: €@car.PricePerDay</MudText>
+                    <MudText Typo="Typo.body2">Price per day: €@car.Car.PricePerDay</MudText>
                 </MudCardContent>
             </div>
             
@@ -41,46 +42,21 @@
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/details/{car.Id}"))">
                     Details
                 </MudButton>
-                <AuthorizeView Roles=@Role.Admin.ToString()>
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Size="Size.Small" OnClick="@(() => NavigationManager.NavigateTo($"/cars/edit/{car.Id}"))">
-                        Edit
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" Size="Size.Small" OnClick="@((e) => OpenDeleteDialog(car))">
-                        Delete
-                    </MudButton>
-                </AuthorizeView>
             </div>
         </MudCard>
     }
 </MudStack>
 
 @code {
-    private List<CarDto> cars = new();
+    private List<CarRentDto> cars = new();
 
     protected override async Task OnInitializedAsync()
     {
-        cars = await CarService.GetAllCarsAsync();
-    }
-
-    private async Task OpenDeleteDialog(CarDto car)
-    {
-        var parameters = new DialogParameters<DeleteCarDialog> { { x => x.Car, car } };
-
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-
-        var dialog = await DialogService.ShowAsync<DeleteCarDialog>($"Delete {car.Brand} {car.Model}?", parameters, options);
-        var result = await dialog.Result;
-
-        if (!result.Canceled)
-        {
-            cars = await CarService.GetAllCarsAsync();
-        }
+        cars = await CarRentService.GetAllCarRentsAsync();
     }
 
     private void RentCar(CarDto car)
     {
         Console.WriteLine($"Renting car: {car.Brand} {car.Model}");
-        
-        
     }
 }

@@ -1,4 +1,4 @@
-using CarRentXpress.Data.Enums;
+using CarRentXpress.Core.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

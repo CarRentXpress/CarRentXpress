@@ -1,4 +1,4 @@
-namespace CarRentXpress.Data.Enums;
+namespace CarRentXpress.Core.Enums;
 
 public enum Role
 {

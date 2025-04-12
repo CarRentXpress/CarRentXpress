@@ -1,16 +1,21 @@
-﻿@implements IDisposable
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+@implements IDisposable
 
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavLink Href="cars/create" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">Create Car</MudNavLink>
+
+    @if (isAdmin)
+    {
+        <MudNavLink Href="cars/create" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">Create Car</MudNavLink>
+    }
+
     <MudNavLink Href="cars" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">Cars</MudNavLink>
-    @* <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink> *@
-    @* *@
-    @* <MudNavLink Href="weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Weather</MudNavLink> *@
-    @* *@
-    @* <MudNavLink Href="auth" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Lock">Auth Required</MudNavLink> *@
+    <MudNavLink Href="/rented/cars" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">Rented Cars</MudNavLink>
+
     <AuthorizeView>
         <Authorized>
             <MudNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink>
@@ -29,14 +34,33 @@
     </AuthorizeView>
 </MudNavMenu>
 
-
 @code {
     private string? currentUrl;
+    private bool isAdmin;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
+
+        await CheckIfUserIsAdmin();
+    }
+
+    private async Task CheckIfUserIsAdmin()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            isAdmin = user.IsInRole("Admin");
+        }
+        else
+        {
+            isAdmin = false;
+        }
+
+        StateHasChanged();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -50,4 +74,3 @@
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
 }
-

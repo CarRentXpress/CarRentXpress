@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 using CarRentXpress.Core.Repositories;
 using Google.Cloud.Storage.V1;
 using static Google.Cloud.Storage.V1.UrlSigner;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 public class FirebaseStorageService : IFileUploadService
 {
     private readonly string _firebaseBucketUrl = "carrentxpress.firebasestorage.app"; // Your Firebase Storage bucket name
-    private readonly string _jsonCredentialPath = "C:\\Users\\Martin\\Git\\CarRentXpress\\src\\CarRentXpress.Data\\carrentxpress-firebase-adminsdk-fbsvc-655e8a78b0.json"; // Path to your Firebase Service Account Key
+    private readonly string _jsonCredentialPath = "C:\\Users\\D.Ivanov\\Downloads\\carrentxpress-firebase-adminsdk-fbsvc-655e8a78b0.json"; // Path to your Firebase Service Account Key
     private FirebaseApp _firebaseApp;
     private StorageClient _storageClient;
 

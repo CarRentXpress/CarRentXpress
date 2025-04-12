@@ -13,4 +13,5 @@ public class ApplicationUser : IdentityUser
     [StringLength(10, MinimumLength = 10)]
     [RegularExpression(@"^\d{10}$", ErrorMessage = "EGN must be a 10-digit number")]
     public string EGN { get; set; } // EGN must be unique!
+
 }

@@ -9,8 +9,8 @@ public class CarRentConfiguration : IEntityTypeConfiguration<CarRent>
     void IEntityTypeConfiguration<CarRent>.Configure(EntityTypeBuilder<CarRent> builder)
     {
         builder.HasOne(r => r.Car)
-            .WithMany() // Assuming a Car can have many rentals, if not use .WithOne() instead
-            .IsRequired();
+            .WithOne(c => c.)
+            .IsRequired(); 
 
         // Configure the ApplicationUser foreign key relationship
         builder.HasOne(r => r.User)

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using CarRentXpress.Data.Entities;
+using CarRentXpress.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRentXpress.Application.Entities;
@@ -12,7 +13,8 @@ public class CarRentDto : BaseDeletableEntity<string>
     }
 
     [Required]
-    public Car Car { get; set; }
+    public string CarId { get; set; }
+    public CarDto Car { get; set; }
     [Required]
     public ApplicationUser User { get; set; }
     [Required]

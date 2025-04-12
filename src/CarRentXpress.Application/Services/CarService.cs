@@ -29,6 +29,7 @@ public class CarService : ICarService
         
         await _carRepository.CreateAsync(car, cancellationToken);
     }
+    
 
     public async Task AddCarsAsync(IEnumerable<CarDto> carsDto, CancellationToken cancellationToken = default)
     {
@@ -39,7 +40,7 @@ public class CarService : ICarService
     public async Task<List<CarDto>> GetAllCarsAsync(CancellationToken cancellationToken = default)
     {
         var cars = await _carRepository.GetManyAsync(Array.Empty<Expression<Func<Car, bool>>>(), cancellationToken);
-        return _mapper.Map<List<CarDto>>(cars.Where(c => c.IsDeleted == false));
+        return _mapper.Map<List<CarDto>>(cars.Where(c => c.IsDeleted == false).OrderBy(c => c.PricePerDay));
     }
 
     public async Task<CarDto?> GetCarByIdAsync(string id, CancellationToken cancellationToken = default)

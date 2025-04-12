@@ -10,20 +10,33 @@ namespace CarRentXpress.Application.Services
     public class CarRentService : ICarRentService
     {
         private readonly IRepository<CarRent> _carRentRepository;
+        private readonly IRepository<Car> _carRepository;
         private readonly IMapper _mapper;
-        private readonly ApplicationDbContext _dbContext;
+        
 
-        public CarRentService(IRepository<CarRent> carRentRepository, ApplicationDbContext dbContext, IMapper mapper)
+        public CarRentService(IRepository<CarRent> carRentRepository, IRepository<Car> carRepository, IMapper mapper)
         {
+            _carRepository = carRepository;
             _carRentRepository = carRentRepository;
             _mapper = mapper;
-            _dbContext = dbContext;
         }
 
         public async Task RentCarAsync(CarRentDto carRentDto, CancellationToken cancellationToken = default)
         {
             CarRent carRent = _mapper.Map<CarRent>(carRentDto);
             
+            var carFilters = new List<Expression<Func<Car, bool>>>
+            {
+                c => c.Id == carRent.CarId
+            };
+
+            var car = await _carRepository.GetAsync(carFilters, cancellationToken);
+            if (car == null)
+            {
+                throw new Exception("Car not found.");
+            }
+
+            // Create the new CarRent record using the generic repository.
             await _carRentRepository.CreateAsync(carRent, cancellationToken);
         }
 
@@ -76,5 +89,29 @@ namespace CarRentXpress.Application.Services
                 await _carRentRepository.HardDeleteAsync(carRent, cancellationToken);
             }
         }
+
+        public async Task<bool> IsCarAvailableAsync(string carId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+        {
+            Expression<Func<CarRent, bool>> carFilter = r => r.Car.Id == carId;
+    
+            Expression<Func<CarRent, bool>> dateOverlapFilter = r =>
+                (startDate >= r.StartDate && startDate <= r.EndDate) ||
+                (endDate >= r.StartDate && endDate <= r.EndDate) ||
+                (startDate <= r.StartDate && endDate >= r.EndDate);
+
+            var filters = new List<Expression<Func<CarRent, bool>>>
+            {
+                carFilter,
+                dateOverlapFilter
+            };
+
+            var overlappingRents = await _carRentRepository.GetManyAsync(filters, cancellationToken);
+
+            // If there are no overlapping rentals, the car is available
+            return !overlappingRents.Any();
+        }
+
+
+
     }
 }
