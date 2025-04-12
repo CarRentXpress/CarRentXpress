@@ -1,0 +1,56 @@
+﻿@page "/cars/rent/edit/{carRentId}"
+@using CarRentXpress.Application.Entities
+@using CarRentXpress.Application.Services
+@using CarRentXpress.DTOs
+@using CarRentXpress.Application.Services.Interfaces
+@inject NavigationManager NavigationManager
+@inject ICarRentService CarRentService
+@inject IDialogService DialogService
+
+<MudStack Spacing="2">
+    <MudForm>
+        <MudCard>
+            <MudCardContent>
+                <MudDateRangePicker @bind-DateRange="selectedDateRange" Label="Select rental period" Required="true" />
+
+                <MudButton OnClick="SaveChanges" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">
+                    Save Changes
+                </MudButton>
+            </MudCardContent>
+        </MudCard>
+
+        <MudButton OnClick="Cancel" Variant="Variant.Text" Color="Color.Secondary" FullWidth="true">
+            Cancel
+        </MudButton>
+    </MudForm>
+</MudStack>
+
+@code {
+    [Parameter] public string CarRentId { get; set; }
+    private CarRentDto carRentDto;
+    private DateRange selectedDateRange = new DateRange();
+
+    protected override async Task OnInitializedAsync()
+    {
+        carRentDto = await CarRentService.GetCarRentByIdAsync(CarRentId);
+        selectedDateRange.Start = carRentDto.StartDate;
+        selectedDateRange.End = carRentDto.EndDate;
+    }
+
+    private async Task SaveChanges()
+    {
+        if (selectedDateRange.Start.HasValue && selectedDateRange.End.HasValue)
+        {
+            var startDate = selectedDateRange.Start.Value;
+            var endDate = selectedDateRange.End.Value;
+        }
+        await CarRentService.UpdateCarRentAsync(carRentDto);
+
+        NavigationManager.NavigateTo("/cars/rents");
+    }
+
+    private async Task Cancel()
+    {
+        NavigationManager.NavigateTo("/cars/rents");
+    }
+}

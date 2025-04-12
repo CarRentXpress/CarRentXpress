@@ -9,17 +9,22 @@ namespace CarRentXpress.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<IdentityRole> builder)
         {
-            var roles = Enum.GetValues(typeof(Role))
-                .Cast<Role>()
+            var roles = new List<string>
+            {
+                Role.User,
+                Role.Admin
+            };
+
+            var identityRoles = roles
                 .Select(role => new IdentityRole
                 {
-                    Id = role.ToString(),
-                    Name = role.ToString(),
-                    NormalizedName = role.ToString().ToUpper()
+                    Id = role, // or use role if you want it to be predictable
+                    Name = role,
+                    NormalizedName = role.ToUpper()
                 })
                 .ToList();
 
-            builder.HasData(roles);
+            builder.HasData(identityRoles);
         }
     }
 }

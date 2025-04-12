@@ -23,20 +23,7 @@ namespace CarRentXpress.Application.Services
 
         public async Task RentCarAsync(CarRentDto carRentDto, CancellationToken cancellationToken = default)
         {
-            CarRent carRent = _mapper.Map<CarRent>(carRentDto);
-            
-            var carFilters = new List<Expression<Func<Car, bool>>>
-            {
-                c => c.Id == carRent.CarId
-            };
-
-            var car = await _carRepository.GetAsync(carFilters, cancellationToken);
-            if (car == null)
-            {
-                throw new Exception("Car not found.");
-            }
-
-            // Create the new CarRent record using the generic repository.
+            var carRent = _mapper.Map<CarRent>(carRentDto);
             await _carRentRepository.CreateAsync(carRent, cancellationToken);
         }
 
@@ -72,6 +59,15 @@ namespace CarRentXpress.Application.Services
         public async Task<List<CarRentDto>> GetAllCarRentsAsync(CancellationToken cancellationToken = default)
         {
             var carRents = await _carRentRepository.GetManyAsync(Array.Empty<Expression<Func<CarRent, bool>>>(), cancellationToken);
+            foreach (var carRent in carRents)
+            {
+                var car = await _carRepository.GetAsync(
+                    [c => c.Id == carRent.CarId],
+                    cancellationToken
+                );
+
+                carRent.Car = car;
+            }
             return _mapper.Map<List<CarRentDto>>(carRents);
         }
 

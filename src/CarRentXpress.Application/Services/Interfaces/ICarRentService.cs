@@ -1,4 +1,5 @@
 ﻿using CarRentXpress.Application.Entities;
+using CarRentXpress.Data.Entities;
 
 namespace CarRentXpress.Application.Services;
 

@@ -9,7 +9,8 @@ public class CarRentConfiguration : IEntityTypeConfiguration<CarRent>
     void IEntityTypeConfiguration<CarRent>.Configure(EntityTypeBuilder<CarRent> builder)
     {
         builder.HasOne(r => r.Car)
-            .WithOne()
+            .WithMany()
+            .HasForeignKey(r => r.CarId)
             .IsRequired(); 
 
         // Configure the ApplicationUser foreign key relationship

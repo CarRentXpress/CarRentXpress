@@ -3,10 +3,13 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
-
 @using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.Core.Enums
 @using CarRentXpress.DTOs
+@using Microsoft.AspNetCore.Authorization
 @using MudBlazor
+
+@attribute [Authorize(Roles = $"{Role.Admin}")]
 
 <PageTitle>Edit Car</PageTitle>
 

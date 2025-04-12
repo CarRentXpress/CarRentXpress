@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using CarRentXpress.Core.Enums
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Components.Authorization
 @implements IDisposable
 
@@ -8,14 +9,18 @@
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
 
-    @if (isAdmin)
-    {
+    <AuthorizeView Roles="@Role.Admin">
         <MudNavLink Href="cars/create" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">Create Car</MudNavLink>
-    }
+    </AuthorizeView>
 
     <MudNavLink Href="cars" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">Cars</MudNavLink>
-    <MudNavLink Href="/rented/cars" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">Rented Cars</MudNavLink>
-
+    <AuthorizeView Roles="@Role.Admin">
+        <MudNavLink Href="/cars/rents" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">Car Rents</MudNavLink>
+    </AuthorizeView>
+    
+    <AuthorizeView Roles="@Role.User">
+        <MudNavLink Href="/cars/rents" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.CarRental">My Car Rents</MudNavLink>
+    </AuthorizeView>
     <AuthorizeView>
         <Authorized>
             <MudNavLink Href="Account/Manage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">@context.User.Identity?.Name</MudNavLink>
@@ -36,31 +41,11 @@
 
 @code {
     private string? currentUrl;
-    private bool isAdmin;
 
     protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
-
-        await CheckIfUserIsAdmin();
-    }
-
-    private async Task CheckIfUserIsAdmin()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity?.IsAuthenticated == true)
-        {
-            isAdmin = user.IsInRole("Admin");
-        }
-        else
-        {
-            isAdmin = false;
-        }
-
-        StateHasChanged();
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)

@@ -1,7 +1,7 @@
 namespace CarRentXpress.Core.Enums;
 
-public enum Role
+public static class Role
 {
-    User,
-    Admin
+    public const string User = "User";
+    public const string Admin = "Admin";
 }

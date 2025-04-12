@@ -1,0 +1,40 @@
+﻿@using CarRentXpress.Application.Entities
+@using CarRentXpress.Application.Services
+@using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.DTOs
+
+@inject ICarRentService CarRentService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.DeleteForever" Class="mr-3 mb-n1"/>
+            Delete car rent?
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTextField Value="@CarRent.Id" Label="CarRent Id" ReadOnly="true"/>
+        <MudTextField Value="@CarRent.Car.Brand" Label="Car Brand" ReadOnly="true"/>
+        <MudTextField Value="@CarRent.Car.Model" Label="Car Model" ReadOnly="true"/>
+        <MudTextField Value="@CarRent.StartDate.ToString("d")" Label="Start Date" ReadOnly="true"/>
+        <MudTextField Value="@CarRent.EndDate.ToString("d")" Label="End Date" ReadOnly="true"/>
+        <MudTextField Value="@CarRent.Price.ToString("C")" Label="Price" ReadOnly="true"/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="async () => await Cancel()">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="async () => await DeleteCarRent()">Delete CarRent</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
+    [Parameter] public CarRentDto CarRent { get; set; }
+
+    private async Task Cancel() => MudDialog.Cancel();
+
+    private async Task DeleteCarRent()
+    {
+        await CarRentService.DeleteCarRentAsync(CarRent.Id);
+        MudDialog.Close(DialogResult.Ok(CarRent.Id));
+    }
+}

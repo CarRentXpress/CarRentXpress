@@ -3,6 +3,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
+@using CarRentXpress.Core.Enums
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using CarRentXpress.Data
@@ -29,24 +30,34 @@
 
             <MudGrid>
                 <MudItem md="12">
+                    <MudStaticTextField For="@(() => Input.FirstName)" @bind-Value="Input.FirstName"
+                                        Label="First Name" Placeholder="Gosho"
+                                        UserAttributes="@(new() { { "autocomplete", "username" }, { "aria-required", "true" } } )" />
+                </MudItem>
+                <MudItem md="12">
+                    <MudStaticTextField For="@(() => Input.LastName)" @bind-Value="Input.LastName"
+                                        Label="Last Name" Placeholder="Peshov"
+                                        UserAttributes="@(new() { { "autocomplete", "username" }, { "aria-required", "true" } } )" />
+                </MudItem>
+                <MudItem md="12">
                     <MudStaticTextField For="@(() => Input.Email)" @bind-Value="Input.Email"
                                         Label="Email" Placeholder="name@example.com"
-                                        UserAttributes="@(new() { { "autocomplete", "username" }, { "aria-required", "true" } } )" />
+                                        UserAttributes="@(new() { { "autocomplete", "email" }, { "aria-required", "true" } })"/>
                 </MudItem>
                 <MudItem md="12">
                     <MudStaticTextField For="@(() => Input.EGN)" @bind-Value="Input.EGN"
                                         Label="EGN" Placeholder="0000000000"
-                                        UserAttributes="@(new() { { "autocomplete", "new-egn" }, { "aria-required", "true" } } )" />
+                                        UserAttributes="@(new() { { "autocomplete", "new-egn" }, { "aria-required", "true" } })"/>
                 </MudItem>
                 <MudItem md="12">
                     <MudStaticTextField For="@(() => Input.Password)" @bind-Value="Input.Password"
                                         Label="Password" InputType="InputType.Password" Placeholder="password"
-                                        UserAttributes="@(new() { { "autocomplete", "new-password" }, { "aria-required", "true" } } )" />
+                                        UserAttributes="@(new() { { "autocomplete", "new-password" }, { "aria-required", "true" } })"/>
                 </MudItem>
                 <MudItem md="12">
                     <MudStaticTextField For="@(() => Input.ConfirmPassword)" @bind-Value="Input.ConfirmPassword"
                                         Label="Confirm Password" InputType="InputType.Password" Placeholder="confirm password"
-                                        UserAttributes="@(new() { { "autocomplete", "new-password" }, { "aria-required", "true" } } )" />
+                                        UserAttributes="@(new() { { "autocomplete", "new-password" }, { "aria-required", "true" } })"/>
                 </MudItem>
                 <MudItem md="12">
                     <MudStaticButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" FormAction="FormAction.Submit">Register</MudStaticButton>
@@ -78,6 +89,8 @@
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        user.FirstName = Input.FirstName;
+        user.LastName = Input.LastName;
         user.EGN = Input.EGN;
         var result = await UserManager.CreateAsync(user, Input.Password);
 
@@ -86,7 +99,9 @@
             identityErrors = result.Errors;
             return;
         }
-
+        
+        await UserManager.AddToRoleAsync(user, Role.User.ToString());
+        
         Logger.LogInformation("User created a new account with password.");
 
         var userId = await UserManager.GetUserIdAsync(user);
@@ -133,6 +148,14 @@
 
     private sealed class InputModel
     {
+        [Required]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; } = "";
+        
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; } = "";
+        
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]

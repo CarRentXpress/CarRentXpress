@@ -4,6 +4,7 @@
 @using CarRentXpress.Application.Entities
 @using CarRentXpress.Application.Services
 @using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.Core.Enums
 @using CarRentXpress.DTOs
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -15,44 +16,48 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IMapper mapper
 
+@attribute [Authorize]
+
 <PageTitle>Rent Car</PageTitle>
 
-<MudPaper Class="p-4">
-    @if (car == null)
-    {
-        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
-    }
-    else
-    {
-        <MudStack Spacing="3">
-            <MudText Typo="Typo.h4">@car.Brand @car.Model</MudText>
 
-            <MudImage Src="@car.ImgUrl" Alt="Car Image" Width="240" Height="160" Class="rounded-lg" Elevation="25" />
+<AuthorizeView>
+    <MudPaper Class="p-4">
+        @if (car == null)
+        {
+            <MudProgressCircular Indeterminate="true" Color="Color.Primary"/>
+        }
+        else
+        {
+            <MudStack Spacing="3">
+                <MudText Typo="Typo.h4">@car.Brand @car.Model</MudText>
 
-            <MudText Typo="Typo.body1"><b>Year:</b> @car.Year</MudText>
-            <MudText Typo="Typo.body1"><b>Seats:</b> @car.Seats</MudText>
-            <MudText Typo="Typo.body1"><b>Description:</b> @car.Description</MudText>
-            <MudText Typo="Typo.body1"><b>Price per day:</b> €@car.PricePerDay</MudText>
+                <MudImage Src="@car.ImgUrl" Alt="Car Image" Width="240" Height="160" Class="rounded-lg" Elevation="25"/>
 
-            <!-- Date Range Picker for selecting rental dates -->
-            <MudDateRangePicker @bind-DateRange="selectedDateRange" Label="Select rental period" />
+                <MudText Typo="Typo.body1"><b>Year:</b> @car.Year</MudText>
+                <MudText Typo="Typo.body1"><b>Seats:</b> @car.Seats</MudText>
+                <MudText Typo="Typo.body1"><b>Description:</b> @car.Description</MudText>
+                <MudText Typo="Typo.body1"><b>Price per day:</b> €@car.PricePerDay</MudText>
 
-            @if (totalPrice > 0)
-            {
-                <MudText Typo="Typo.h6"><b>Total Price: €@totalPrice</b></MudText>
-            }
+                <!-- Date Range Picker for selecting rental dates -->
+                <MudDateRangePicker @bind-DateRange="selectedDateRange" Label="Select rental period"/>
 
-            <MudStack Direction="Row" Spacing="2">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GoBack">Back to List</MudButton>
-                <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="SubmitRent">Rent</MudButton>
+                @if (totalPrice > 0)
+                {
+                    <MudText Typo="Typo.h6"><b>Total Price: €@totalPrice</b></MudText>
+                }
+
+                <MudStack Direction="Row" Spacing="2">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GoBack">Back to List</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="SubmitRent">Rent</MudButton>
+                </MudStack>
             </MudStack>
-        </MudStack>
-    }
-</MudPaper>
+        }
+    </MudPaper>
+</AuthorizeView>
 
 @code {
-    [Parameter]
-    public string Id { get; set; }
+    [Parameter] public string Id { get; set; }
 
     private CarDto? car;
     private DateRange selectedDateRange = new DateRange(); // To bind to MudDateRangePicker
@@ -92,12 +97,7 @@
 
             var rent = new CarRentDto
             {
-                CarId = car.Id,
-                Car = car,
-                User = user,
-                StartDate = startDate,
-                EndDate = endDate,
-                Price = totalPrice
+                CarId = car.Id, User = user, StartDate = startDate, EndDate = endDate, Price = totalPrice
             };
 
             await CarRentService.RentCarAsync(rent);

@@ -13,7 +13,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
+        
         modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
         modelBuilder.ApplyConfiguration(new CarConfiguration());
         modelBuilder.ApplyConfiguration(new CarRentConfiguration());

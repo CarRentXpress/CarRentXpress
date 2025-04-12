@@ -2,11 +2,15 @@
 
 @using CarRentXpress.DTOs
 @using CarRentXpress.Application.Services.Interfaces
+@using CarRentXpress.Core.Enums
 @using CarRentXpress.Core.Repositories
+@using Microsoft.AspNetCore.Authorization
 @inject ICarService CarService
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 @inject IFileUploadService FileUploadService
+
+@attribute [Authorize(Roles = $"{Role.Admin}")]
 
 <h3>Create Car</h3>
 
@@ -71,6 +75,11 @@
         {
             var fileUrl = await FileUploadService.UploadFileAsync(file.OpenReadStream(), "CarImages/");
             carDto.ImgUrl = fileUrl;  // Save the uploaded URL
+        }
+        else
+        {
+            Snackbar.Add("Car needs a picture!", Severity.Error);
+            return;
         }
 
         await CarService.AddCarAsync(carDto);
